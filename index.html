@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tüm Görevler</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #fff8e1;
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    background: #ffb300;
+    width: 100%;
+    padding: 16px 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: #3e2723;
+    text-align: center;
+  }
+  main {
+    width: 100%;
+    max-width: 700px;
+    padding: 16px 20px 40px;
+    box-sizing: border-box;
+  }
+  section {
+    margin-bottom: 36px;
+  }
+  h2 {
+    margin-bottom: 12px;
+    border-bottom: 2px solid #ffb300;
+    padding-bottom: 4px;
+    color: #5d4037;
+  }
+  .task-item {
+    background: white;
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgb(0 0 0 / 0.1);
+    word-break: break-word;
+    font-size: 16px;
+  }
+  @media (max-width: 480px) {
+    main {
+      padding: 12px 16px 32px;
+    }
+    h2 {
+      font-size: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>Tüm Görevler</header>
+<main>
+  <section id="yazilim-section">
+    <h2>Sayfa 1 Görevleri</h2>
+    <div id="tasks-yazilim"></div>
+  </section>
+  <section id="elektronik-section">
+    <h2>Sayfa 2 Görevleri</h2>
+    <div id="tasks-elektronik"></div>
+  </section>
+  <section id="mekanik-section">
+    <h2>Sayfa 3 Görevleri</h2>
+    <div id="tasks-mekanik"></div>
+  </section>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDG_137yYpS1J4AWSTly6tWjYSP1LZf1OE",
+    authDomain: "hurturk-bfdbe.firebaseapp.com",
+    projectId: "hurturk-bfdbe",
+    storageBucket: "hurturk-bfdbe.firebasestorage.app",
+    messagingSenderId: "215240314397",
+    appId: "1:215240314397:web:22724b96074018ef7940f4",
+    measurementId: "G-9JJVX261W6"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  function loadTasks(page) {
+    const container = document.getElementById("tasks-" + page);
+    const tasksRef = ref(db, 'tasks/' + page);
+    onValue(tasksRef, snapshot => {
+      container.innerHTML = "";
+      if (!snapshot.exists()) {
+        container.innerHTML = "<p>Görev bulunamadı.</p>";
+        return;
+      }
+      snapshot.forEach(childSnapshot => {
+        const task = childSnapshot.val();
+        const div = document.createElement("div");
+        div.classList.add("task-item");
+        div.textContent = task.text;
+        container.appendChild(div);
+      });
+    });
+  }
+
+  loadTasks("yazilim");
+  loadTasks("elektronik");
+  loadTasks("mekanik");
+</script>
+
+</body>
+</html>

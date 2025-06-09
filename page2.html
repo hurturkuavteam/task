@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Elektronik Görevleri</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #e8f5e9;
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    background: #388e3c;
+    width: 100%;
+    padding: 16px 0;
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+  }
+  main {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .task-item {
+    background: white;
+    margin-bottom: 14px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.12);
+    font-size: 16px;
+    word-break: break-word;
+  }
+  @media (max-width: 480px) {
+    main {
+      padding: 16px 14px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>Elektronik Görevleri</header>
+<main id="tasks-container">
+  <!-- Görevler buraya gelecek -->
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDG_137yYpS1J4AWSTly6tWjYSP1LZf1OE",
+    authDomain: "hurturk-bfdbe.firebaseapp.com",
+    projectId: "hurturk-bfdbe",
+    storageBucket: "hurturk-bfdbe.firebasestorage.app",
+    messagingSenderId: "215240314397",
+    appId: "1:215240314397:web:22724b96074018ef7940f4",
+    measurementId: "G-9JJVX261W6"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const pageName = "elektronik"; // Değiştir: page2, page3
+
+  function loadTasks() {
+    const container = document.getElementById("tasks-container");
+    const tasksRef = ref(db, 'tasks/' + pageName);
+    onValue(tasksRef, snapshot => {
+      container.innerHTML = "";
+      if (!snapshot.exists()) {
+        container.innerHTML = "<p>Görev bulunamadı.</p>";
+        return;
+      }
+      snapshot.forEach(childSnapshot => {
+        const task = childSnapshot.val();
+        const div = document.createElement("div");
+        div.classList.add("task-item");
+        div.textContent = task.text;
+        container.appendChild(div);
+      });
+    });
+  }
+
+  loadTasks();
+</script>
+
+</body>
+</html>

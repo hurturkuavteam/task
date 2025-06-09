@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin Paneli - Görev Yönetimi</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f7f9fc;
+    margin: 0;
+    padding: 0 1rem 3rem;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    background-color: #004e89;
+    color: #fff;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  }
+  h2 {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    color: #004e89;
+  }
+
+  form {
+    max-width: 600px;
+    margin: 1.5rem auto 2rem auto;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+  }
+  label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: #444;
+  }
+  select, textarea, button {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    border: 1.5px solid #ccc;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  select:focus, textarea:focus {
+    border-color: #004e89;
+    outline: none;
+  }
+  button {
+    background-color: #004e89;
+    color: white;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background-color: #003566;
+  }
+
+  .tasks-container {
+    max-width: 800px;
+    margin: 0 auto;
+    flex-grow: 1;
+  }
+  .task-card {
+    background: white;
+    margin-bottom: 1rem;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    word-break: break-word;
+  }
+  .task-text {
+    flex-grow: 1;
+    color: #222;
+    font-size: 1rem;
+  }
+  .delete-wrapper {
+    margin-left: 1rem;
+    background: #ff4d4d;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 700;
+    color: white;
+    transition: background 0.3s ease;
+  }
+  .delete-wrapper:hover {
+    background: #e04343;
+  }
+
+  footer {
+    text-align: center;
+    padding: 1rem 1rem 2rem;
+    background: #f1f5f9;
+  }
+  #logoutBtn {
+    background: #ff4d4d;
+    border: none;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-size: 1rem;
+  }
+  #logoutBtn:hover {
+    background: #e04343;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .task-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .delete-wrapper {
+      margin: 0.5rem 0 0 0;
+      width: 100%;
+      text-align: center;
+      border-radius: 8px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  Görev Yönetimi - Admin Paneli
+</header>
+
+<main>
+  <form id="taskForm">
+    <label for="pageSelect">Görev Birimi Seçin:</label>
+    <select id="pageSelect" required>
+      <option value="" disabled selected>Birim seçin</option>
+      <option value="yazilim">Yazılım</option>
+      <option value="elektronik">Elektronik</option>
+      <option value="mekanik">Mekanik</option>
+    </select>
+
+    <label for="taskInput">Görev Metni:</label>
+    <textarea id="taskInput" rows="3" placeholder="Görev metnini yazın..." required></textarea>
+
+    <button type="submit">Görev Ekle</button>
+  </form>
+
+  <section class="tasks-container" id="tasksContainer">
+    <!-- Görevler buraya yüklenecek -->
+  </section>
+</main>
+
+<footer>
+  <button id="logoutBtn">Çıkış Yap</button>
+</footer>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import {
+    getDatabase,
+    ref,
+    push,
+    onValue,
+    remove,
+  } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+  import {
+    getAuth,
+    onAuthStateChanged,
+    signOut,
+  } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDG_137yYpS1J4AWSTly6tWjYSP1LZf1OE",
+    authDomain: "hurturk-bfdbe.firebaseapp.com",
+    databaseURL: "https://hurturk-bfdbe-default-rtdb.firebaseio.com",
+    projectId: "hurturk-bfdbe",
+    storageBucket: "hurturk-bfdbe.appspot.com",
+    messagingSenderId: "215240314397",
+    appId: "1:215240314397:web:22724b96074018ef7940f4"
+  };
+
+  const ADMIN_UIDS = [
+    "Q8Rg0Jc2yfdkWHdmUD8C7Dqlqd32", // Buraya admin UID'lerini yaz
+    "X1ChBQEZyMNejGnDwaGLFLbIn4Q2",
+    "kbAlISUr9QdlebZAUhvYrvm4N662",
+    "yEoZDk8ezpcasM8Z9i53HBD0xSJ2"
+  ];
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const auth = getAuth(app);
+
+  const logoutBtn = document.getElementById("logoutBtn");
+  const taskForm = document.getElementById("taskForm");
+  const pageSelect = document.getElementById("pageSelect");
+  const taskInput = document.getElementById("taskInput");
+  const tasksContainer = document.getElementById("tasksContainer");
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      if (!ADMIN_UIDS.includes(user.uid)) {
+        alert("Bu sayfaya erişim yetkiniz yok!");
+        window.location.href = "index.html";
+        return;
+      }
+      loadTasks();
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth).then(() => {
+      window.location.href = "login.html";
+    });
+  });
+
+  taskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const page = pageSelect.value;
+    const taskText = taskInput.value.trim();
+    if (page && taskText) {
+      const taskRef = ref(db, "tasks/" + page);
+      push(taskRef, {
+        text: taskText,
+        timestamp: Date.now()
+      }).then(() => {
+        taskInput.value = "";
+      });
+    }
+  });
+
+  function loadTasks() {
+    tasksContainer.innerHTML = "";
+    ["yazilim", "elektronik", "mekanik"].forEach(page => {
+      const pageRef = ref(db, "tasks/" + page);
+      onValue(pageRef, (snapshot) => {
+        const data = snapshot.val();
+        renderTasks(page, data);
+      });
+    });
+  }
+
+  function renderTasks(page, tasks) {
+    let pageSection = document.getElementById("section-" + page);
+    if (!pageSection) {
+      pageSection = document.createElement("section");
+      pageSection.id = "section-" + page;
+      pageSection.innerHTML = `<h2>${page.toUpperCase()} Görevleri</h2>`;
+      tasksContainer.appendChild(pageSection);
+    }
+    // Temizle
+    pageSection.querySelectorAll(".task-card").forEach(t => t.remove());
+
+    if (!tasks) return;
+
+    for (const [taskId, task] of Object.entries(tasks)) {
+      const taskCard = document.createElement("div");
+      taskCard.className = "task-card";
+
+      const taskText = document.createElement("div");
+      taskText.className = "task-text";
+      taskText.textContent = task.text;
+
+      const delWrapper = document.createElement("div");
+      delWrapper.className = "delete-wrapper";
+      delWrapper.textContent = "Sil";
+      delWrapper.onclick = () => {
+        if (confirm("Bu görevi silmek istediğinize emin misiniz?")) {
+          remove(ref(db, `tasks/${page}/${taskId}`));
+        }
+      };
+
+      taskCard.appendChild(taskText);
+      taskCard.appendChild(delWrapper);
+      pageSection.appendChild(taskCard);
+    }
+  }
+</script>
+
+</body>
+</html>

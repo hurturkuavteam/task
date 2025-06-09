@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yönetici Girişi</title>
+  <style>
+    body {
+      background-color: #f0f4f8;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 360px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #003366;
+    }
+    input {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: #004080;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #002a5e;
+    }
+    .error {
+      color: red;
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Admin Girişi</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Şifre">
+    <button onclick="login()">Giriş Yap</button>
+    <div class="error" id="errorMsg"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDG_137yYpS1J4AWSTly6tWjYSP1LZf1OE",
+      authDomain: "hurturk-bfdbe.firebaseapp.com",
+      projectId: "hurturk-bfdbe",
+      storageBucket: "hurturk-bfdbe.appspot.com",
+      messagingSenderId: "215240314397",
+      appId: "1:215240314397:web:22724b96074018ef7940f4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Çoklu admin UID listesi
+    const ADMIN_UIDS = [
+    "Q8Rg0Jc2yfdkWHdmUD8C7Dqlqd32", // Buraya admin UID'lerini yaz
+    "X1ChBQEZyMNejGnDwaGLFLbIn4Q2",
+    "kbAlISUr9QdlebZAUhvYrvm4N662",
+    "yEoZDk8ezpcasM8Z9i53HBD0xSJ2"
+    ];
+
+    window.login = () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorMsg = document.getElementById("errorMsg");
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          if (ADMIN_UIDS.includes(user.uid)) {
+            window.location.href = "admin.html";
+          } else {
+            errorMsg.textContent = "Bu kullanıcıya admin yetkisi verilmemiş.";
+          }
+        })
+        .catch((error) => {
+          errorMsg.textContent = "Giriş başarısız";
+        });
+    };
+  </script>
+</body>
+</html>
