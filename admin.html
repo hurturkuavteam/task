@@ -1,191 +1,594 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Admin Paneli - Görev Yönetimi</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Admin Paneli — HurTürk UAV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #0f2044;
+    --navy-card: #111d35;
+    --accent: #3b82f6;
+    --accent-light: #60a5fa;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --purple: #8b5cf6;
+    --text-main: #f0f4ff;
+    --text-muted: #8fa3c8;
+    --text-dim: #4a5a7a;
+    --border: rgba(255,255,255,0.07);
+    --border-strong: rgba(255,255,255,0.12);
+  }
+
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f7f9fc;
-    margin: 0;
-    padding: 0 1rem 3rem;
-    color: #333;
-    display: flex;
-    flex-direction: column;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--text-main);
     min-height: 100vh;
   }
+
+  /* HEADER */
   header {
-    background-color: #004e89;
-    color: #fff;
-    padding: 1rem 1.5rem;
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  }
-  h2 {
-    margin-top: 2rem;
-    margin-bottom: 0.5rem;
-    color: #004e89;
+    background: rgba(10,22,40,0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(10px);
   }
 
-  form {
-    max-width: 600px;
-    margin: 1.5rem auto 2rem auto;
-    background: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+  .header-left { display: flex; align-items: center; gap: 12px; }
+
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), #1d4ed8);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
   }
-  label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-weight: 600;
-    color: #444;
-  }
-  select, textarea, button {
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    margin-bottom: 1rem;
-    border-radius: 6px;
-    border: 1.5px solid #ccc;
+  .logo-icon svg { width: 16px; height: 16px; fill: white; }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
     font-size: 1rem;
-    transition: border-color 0.3s ease;
+    letter-spacing: 0.06em;
+    color: var(--text-main);
   }
-  select:focus, textarea:focus {
-    border-color: #004e89;
+
+  .header-badge {
+    background: rgba(59,130,246,0.15);
+    border: 1px solid rgba(59,130,246,0.3);
+    color: var(--accent-light);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+
+  .btn-logout {
+    padding: 0.4rem 1rem;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px;
+    color: #fca5a5;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-logout:hover {
+    background: rgba(239,68,68,0.2);
+    border-color: rgba(239,68,68,0.4);
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+  }
+
+  .stat-cell {
+    background: var(--navy);
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1;
+  }
+
+  .stat-value.green { color: var(--green); }
+  .stat-value.amber { color: var(--amber); }
+
+  /* MAIN LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 60px - 80px);
+  }
+
+  /* SIDEBAR FORM */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    background: rgba(0,0,0,0.15);
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.25rem;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.04em;
+  }
+
+  select, textarea, input[type="text"] {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238fa3c8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+  select:focus, textarea:focus, input[type="text"]:focus {
+    border-color: var(--accent);
+    background: rgba(59,130,246,0.06);
+  }
+
+  select option { background: #0f2044; color: var(--text-main); }
+
+  textarea { resize: vertical; min-height: 90px; }
+
+  /* Priority selector */
+  .priority-group {
+    display: flex; gap: 8px;
+  }
+
+  .priority-btn {
+    flex: 1; padding: 0.45rem 0;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .priority-btn.active-low { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.4); color: var(--green); }
+  .priority-btn.active-mid { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4); color: var(--amber); }
+  .priority-btn.active-high { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: var(--red); }
+
+  /* Notification toggle */
+  .notify-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.65rem 0.85rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .notify-label {
+    font-size: 0.88rem;
+    color: var(--text-main);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .notify-label::before {
+    content: '🔔';
+    font-size: 0.85rem;
+  }
+
+  .toggle {
+    width: 38px; height: 22px;
+    background: var(--text-dim);
+    border-radius: 11px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: none;
     outline: none;
   }
-  button {
-    background-color: #004e89;
-    color: white;
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background-color: #003566;
+
+  .toggle.on { background: var(--accent); }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    background: white;
+    border-radius: 50%;
+    top: 3px; left: 3px;
+    transition: left 0.2s;
   }
 
-  .tasks-container {
-    max-width: 800px;
-    margin: 0 auto;
-    flex-grow: 1;
+  .toggle.on::after { left: 19px; }
+
+  .btn-submit {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 9px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.03em;
   }
-  .task-card {
-    background: white;
-    margin-bottom: 1rem;
-    padding: 1rem 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+
+  .btn-submit:hover { background: #2563eb; }
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .form-success {
+    padding: 0.6rem 0.85rem;
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.25);
+    border-radius: 7px;
+    color: #6ee7b7;
+    font-size: 0.83rem;
+    display: none;
+    text-align: center;
+  }
+
+  /* TASKS AREA */
+  .tasks-area {
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+
+  .dept-section {
+    margin-bottom: 2rem;
+  }
+
+  .dept-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dept-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dept-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dept-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+  }
+
+  /* TASK CARD */
+  .task-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: border-color 0.2s;
+  }
+
+  .task-card:hover { border-color: var(--border-strong); }
+  .task-card.completed { opacity: 0.55; }
+  .task-card.completed .task-text { text-decoration: line-through; }
+
+  .task-priority-bar {
+    width: 3px;
+    align-self: stretch;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-right: 2px;
+  }
+
+  .task-body { flex: 1; min-width: 0; }
+
+  .task-text {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    line-height: 1.5;
     word-break: break-word;
   }
-  .task-text {
-    flex-grow: 1;
-    color: #222;
-    font-size: 1rem;
-  }
-  .delete-wrapper {
-    margin-left: 1rem;
-    background: #ff4d4d;
-    padding: 0.2rem 0.6rem;
-    border-radius: 6px;
-    cursor: pointer;
-    user-select: none;
-    font-weight: 700;
-    color: white;
-    transition: background 0.3s ease;
-  }
-  .delete-wrapper:hover {
-    background: #e04343;
+
+  .task-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
   }
 
-  footer {
-    text-align: center;
-    padding: 1rem 1rem 2rem;
-    background: #f1f5f9;
+  .task-time {
+    font-size: 0.72rem;
+    color: var(--text-dim);
   }
-  #logoutBtn {
-    background: #ff4d4d;
+
+  .priority-tag {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .priority-tag.low { background: rgba(16,185,129,0.12); color: var(--green); }
+  .priority-tag.mid { background: rgba(245,158,11,0.12); color: var(--amber); }
+  .priority-tag.high { background: rgba(239,68,68,0.12); color: var(--red); }
+
+  .task-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .action-btn {
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
     border: none;
-    color: white;
-    padding: 0.6rem 1.5rem;
-    font-weight: 700;
-    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.3s ease;
-    font-size: 1rem;
-  }
-  #logoutBtn:hover {
-    background: #e04343;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
   }
 
-  /* Responsive */
-  @media (max-width: 600px) {
-    .task-card {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .delete-wrapper {
-      margin: 0.5rem 0 0 0;
-      width: 100%;
-      text-align: center;
-      border-radius: 8px;
-    }
+  .btn-done {
+    background: rgba(16,185,129,0.1);
+    color: var(--green);
+    border: 1px solid rgba(16,185,129,0.2);
+  }
+  .btn-done:hover { background: rgba(16,185,129,0.2); }
+
+  .btn-undone {
+    background: rgba(245,158,11,0.1);
+    color: var(--amber);
+    border: 1px solid rgba(245,158,11,0.2);
+  }
+  .btn-undone:hover { background: rgba(245,158,11,0.2); }
+
+  .btn-del {
+    background: rgba(239,68,68,0.08);
+    color: #fca5a5;
+    border: 1px solid rgba(239,68,68,0.15);
+  }
+  .btn-del:hover { background: rgba(239,68,68,0.18); }
+
+  .empty-state {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-chip.active {
+    background: rgba(59,130,246,0.15);
+    border-color: rgba(59,130,246,0.35);
+    color: var(--accent-light);
+  }
+
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
 <body>
 
 <header>
-  Görev Yönetimi - Admin Paneli
+  <div class="header-left">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="logo-text">HURTURK UAV</span>
+    <span class="header-badge">ADMIN</span>
+  </div>
+  <div class="header-right">
+    <button class="btn-logout" id="logoutBtn">Çıkış Yap</button>
+  </div>
 </header>
 
-<main>
-  <form id="taskForm">
-    <label for="pageSelect">Görev Birimi Seçin:</label>
-    <select id="pageSelect" required>
-      <option value="" disabled selected>Birim seçin</option>
-      <option value="yazilim">Yazılım</option>
-      <option value="elektronik">Elektronik</option>
-      <option value="mekanik">Mekanik</option>
-    </select>
+<div class="stats-bar" id="statsBar">
+  <div class="stat-cell">
+    <span class="stat-label">Toplam Görev</span>
+    <span class="stat-value" id="statTotal">—</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-label">Beklemede</span>
+    <span class="stat-value amber" id="statPending">—</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-label">Tamamlandı</span>
+    <span class="stat-value green" id="statDone">—</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-label">Acil Görev</span>
+    <span class="stat-value" id="statHigh" style="color:var(--red)">—</span>
+  </div>
+</div>
 
-    <label for="taskInput">Görev Metni:</label>
-    <textarea id="taskInput" rows="3" placeholder="Görev metnini yazın..." required></textarea>
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <p class="section-title">Yeni Görev Ekle</p>
 
-    <button type="submit">Görev Ekle</button>
-  </form>
+    <div class="field">
+      <label>Birim</label>
+      <select id="pageSelect">
+        <option value="" disabled selected>Birim seçin</option>
+        <option value="yazilim">✦ Yazılım</option>
+        <option value="elektronik">✦ Elektronik</option>
+        <option value="mekanik">✦ Mekanik</option>
+      </select>
+    </div>
 
-  <section class="tasks-container" id="tasksContainer">
-    <!-- Görevler buraya yüklenecek -->
-  </section>
-</main>
+    <div class="field">
+      <label>Görev Açıklaması</label>
+      <textarea id="taskInput" placeholder="Görev metnini yazın..."></textarea>
+    </div>
 
-<footer>
-  <button id="logoutBtn">Çıkış Yap</button>
-</footer>
+    <div class="field">
+      <label>Öncelik</label>
+      <div class="priority-group" id="priorityGroup">
+        <button class="priority-btn active-low" data-val="low" onclick="setPriority(this)">Düşük</button>
+        <button class="priority-btn" data-val="mid" onclick="setPriority(this)">Orta</button>
+        <button class="priority-btn" data-val="high" onclick="setPriority(this)">Acil</button>
+      </div>
+    </div>
 
-<!-- Firebase SDK -->
+    <div>
+      <label style="display:block; font-size:0.78rem; color:var(--text-muted); margin-bottom:0.4rem; font-weight:500; letter-spacing:0.04em;">Bildirim</label>
+      <div class="notify-row">
+        <span class="notify-label">Push bildirim gönder</span>
+        <button class="toggle on" id="notifyToggle" onclick="this.classList.toggle('on')"></button>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="submitBtn" onclick="addTask()">Görevi Ekle</button>
+    <div class="form-success" id="formSuccess">✓ Görev eklendi!</div>
+
+    <div style="border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.5rem;">
+      <p class="section-title" style="margin-bottom: 0.8rem;">Push Bildirim Gönder</p>
+      <div class="field">
+        <label>Hedef Birim</label>
+        <select id="notifyTarget">
+          <option value="all">Tüm Birimler</option>
+          <option value="yazilim">Yazılım</option>
+          <option value="elektronik">Elektronik</option>
+          <option value="mekanik">Mekanik</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Mesaj</label>
+        <textarea id="notifyMsg" placeholder="Bildirim metnini yazın..." style="min-height:60px;"></textarea>
+      </div>
+      <button class="btn-submit" style="background: rgba(139,92,246,0.8);" onclick="sendNotification()">📢 Bildirim Gönder</button>
+    </div>
+  </aside>
+
+  <!-- TASKS AREA -->
+  <main class="tasks-area">
+    <div class="filter-bar">
+      <button class="filter-chip active" data-filter="all" onclick="setFilter(this)">Tümü</button>
+      <button class="filter-chip" data-filter="pending" onclick="setFilter(this)">Beklemede</button>
+      <button class="filter-chip" data-filter="done" onclick="setFilter(this)">Tamamlandı</button>
+      <button class="filter-chip" data-filter="high" onclick="setFilter(this)">Acil</button>
+    </div>
+
+    <div id="tasksContainer"></div>
+  </main>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
   import {
-    getDatabase,
-    ref,
-    push,
-    onValue,
-    remove,
+    getDatabase, ref, push, onValue, remove, update, get
   } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
   import {
-    getAuth,
-    onAuthStateChanged,
-    signOut,
+    getAuth, onAuthStateChanged, signOut
   } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
   const firebaseConfig = {
@@ -198,104 +601,224 @@
     appId: "1:215240314397:web:22724b96074018ef7940f4"
   };
 
-  const ADMIN_UIDS = [
-    "Q8Rg0Jc2yfdkWHdmUD8C7Dqlqd32", // Buraya admin UID'lerini yaz
-    "X1ChBQEZyMNejGnDwaGLFLbIn4Q2",
-    "kbAlISUr9QdlebZAUhvYrvm4N662",
-    "yEoZDk8ezpcasM8Z9i53HBD0xSJ2"
-  ];
+  const DEPTS = {
+    yazilim: { label: "Yazılım", color: "#3b82f6" },
+    elektronik: { label: "Elektronik", color: "#8b5cf6" },
+    mekanik: { label: "Mekanik", color: "#f59e0b" }
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const auth = getAuth(app);
 
-  const logoutBtn = document.getElementById("logoutBtn");
-  const taskForm = document.getElementById("taskForm");
-  const pageSelect = document.getElementById("pageSelect");
-  const taskInput = document.getElementById("taskInput");
-  const tasksContainer = document.getElementById("tasksContainer");
+  let currentFilter = "all";
+  let selectedPriority = "low";
+  let allTasksCache = {};
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      if (!ADMIN_UIDS.includes(user.uid)) {
+  onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href = "login.html"; return; }
+
+    // Yöntem B: Admin kontrolü Realtime Database'den
+    try {
+      const adminSnap = await get(ref(db, "admins/" + user.uid));
+      if (!adminSnap.exists() || adminSnap.val() !== true) {
         alert("Bu sayfaya erişim yetkiniz yok!");
-        window.location.href = "index.html";
+        await signOut(auth);
+        window.location.href = "login.html";
         return;
       }
-      loadTasks();
-    } else {
+    } catch (e) {
+      alert("Yetki kontrolü başarısız: " + e.message);
       window.location.href = "login.html";
+      return;
     }
+
+    loadTasks();
   });
 
-  logoutBtn.addEventListener("click", () => {
-    signOut(auth).then(() => {
-      window.location.href = "login.html";
+  document.getElementById("logoutBtn").onclick = () => {
+    signOut(auth).then(() => window.location.href = "login.html");
+  };
+
+  // Priority
+  window.setPriority = (btn) => {
+    document.querySelectorAll(".priority-btn").forEach(b => {
+      b.className = "priority-btn";
     });
-  });
+    selectedPriority = btn.dataset.val;
+    btn.classList.add("active-" + (selectedPriority === "low" ? "low" : selectedPriority === "mid" ? "mid" : "high"));
+  };
 
-  taskForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const page = pageSelect.value;
-    const taskText = taskInput.value.trim();
-    if (page && taskText) {
-      const taskRef = ref(db, "tasks/" + page);
-      push(taskRef, {
-        text: taskText,
-        timestamp: Date.now()
-      }).then(() => {
-        taskInput.value = "";
-      });
-    }
-  });
+  // Filter
+  window.setFilter = (btn) => {
+    document.querySelectorAll(".filter-chip").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;
+    renderAllTasks();
+  };
+
+  window.addTask = () => {
+    const page = document.getElementById("pageSelect").value;
+    const text = document.getElementById("taskInput").value.trim();
+    const notify = document.getElementById("notifyToggle").classList.contains("on");
+
+    if (!page || !text) { alert("Lütfen birim ve görev metnini doldurun."); return; }
+
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Ekleniyor...";
+
+    push(ref(db, "tasks/" + page), {
+      text,
+      timestamp: Date.now(),
+      priority: selectedPriority,
+      status: "pending"
+    }).then(taskRef => {
+      // Save notification request to Firebase for Cloud Function
+      if (notify) {
+        push(ref(db, "notifications"), {
+          target: page,
+          title: `${DEPTS[page].label} — Yeni Görev`,
+          body: text.length > 80 ? text.substring(0, 77) + "..." : text,
+          timestamp: Date.now(),
+          sent: false
+        });
+      }
+      document.getElementById("taskInput").value = "";
+      const s = document.getElementById("formSuccess");
+      s.style.display = "block";
+      setTimeout(() => s.style.display = "none", 2500);
+    }).finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Görevi Ekle";
+    });
+  };
+
+  window.sendNotification = () => {
+    const target = document.getElementById("notifyTarget").value;
+    const msg = document.getElementById("notifyMsg").value.trim();
+    if (!msg) { alert("Bildirim metni boş olamaz."); return; }
+
+    push(ref(db, "notifications"), {
+      target,
+      title: target === "all" ? "HurTürk UAV — Duyuru" : `${DEPTS[target]?.label || target} — Duyuru`,
+      body: msg,
+      timestamp: Date.now(),
+      sent: false
+    }).then(() => {
+      document.getElementById("notifyMsg").value = "";
+      alert("✓ Bildirim kuyruğa eklendi! Cloud Function aktifse iletilecektir.");
+    });
+  };
+
+  window.deleteTask = (page, id) => {
+    if (confirm("Bu görevi silmek istiyor musunuz?"))
+      remove(ref(db, `tasks/${page}/${id}`));
+  };
+
+  window.toggleStatus = (page, id, current) => {
+    const newStatus = current === "done" ? "pending" : "done";
+    update(ref(db, `tasks/${page}/${id}`), { status: newStatus });
+  };
 
   function loadTasks() {
-    tasksContainer.innerHTML = "";
-    ["yazilim", "elektronik", "mekanik"].forEach(page => {
-      const pageRef = ref(db, "tasks/" + page);
-      onValue(pageRef, (snapshot) => {
-        const data = snapshot.val();
-        renderTasks(page, data);
+    Object.keys(DEPTS).forEach(page => {
+      onValue(ref(db, "tasks/" + page), snap => {
+        allTasksCache[page] = snap.val();
+        renderAllTasks();
       });
     });
   }
 
-  function renderTasks(page, tasks) {
-    let pageSection = document.getElementById("section-" + page);
-    if (!pageSection) {
-      pageSection = document.createElement("section");
-      pageSection.id = "section-" + page;
-      pageSection.innerHTML = `<h2>${page.toUpperCase()} Görevleri</h2>`;
-      tasksContainer.appendChild(pageSection);
-    }
-    // Temizle
-    pageSection.querySelectorAll(".task-card").forEach(t => t.remove());
+  function renderAllTasks() {
+    const container = document.getElementById("tasksContainer");
+    container.innerHTML = "";
 
-    if (!tasks) return;
+    let total = 0, pending = 0, done = 0, high = 0;
 
-    for (const [taskId, task] of Object.entries(tasks)) {
-      const taskCard = document.createElement("div");
-      taskCard.className = "task-card";
+    Object.entries(DEPTS).forEach(([page, info]) => {
+      const tasks = allTasksCache[page];
+      const section = document.createElement("div");
+      section.className = "dept-section";
 
-      const taskText = document.createElement("div");
-      taskText.className = "task-text";
-      taskText.textContent = task.text;
+      const filtered = tasks ? Object.entries(tasks).filter(([, t]) => {
+        if (currentFilter === "pending") return t.status !== "done";
+        if (currentFilter === "done") return t.status === "done";
+        if (currentFilter === "high") return t.priority === "high";
+        return true;
+      }) : [];
 
-      const delWrapper = document.createElement("div");
-      delWrapper.className = "delete-wrapper";
-      delWrapper.textContent = "Sil";
-      delWrapper.onclick = () => {
-        if (confirm("Bu görevi silmek istediğinize emin misiniz?")) {
-          remove(ref(db, `tasks/${page}/${taskId}`));
-        }
-      };
+      if (tasks) {
+        const entries = Object.values(tasks);
+        total += entries.length;
+        entries.forEach(t => {
+          if (t.status === "done") done++;
+          else pending++;
+          if (t.priority === "high") high++;
+        });
+      }
 
-      taskCard.appendChild(taskText);
-      taskCard.appendChild(delWrapper);
-      pageSection.appendChild(taskCard);
-    }
+      section.innerHTML = `
+        <div class="dept-header">
+          <div class="dept-name">
+            <span class="dept-dot" style="background:${info.color}"></span>
+            ${info.label.toUpperCase()}
+          </div>
+          <span class="dept-count">${filtered.length} görev</span>
+        </div>
+      `;
+
+      if (filtered.length === 0) {
+        section.innerHTML += `<div class="empty-state">Bu filtreda görev yok.</div>`;
+      } else {
+        filtered.sort((a, b) => {
+          const pri = { high: 0, mid: 1, low: 2 };
+          return (pri[a[1].priority] ?? 1) - (pri[b[1].priority] ?? 1);
+        }).forEach(([id, task]) => {
+          const card = document.createElement("div");
+          card.className = "task-card" + (task.status === "done" ? " completed" : "");
+
+          const priColor = task.priority === "high" ? "#ef4444" : task.priority === "mid" ? "#f59e0b" : "#10b981";
+          const priLabel = task.priority === "high" ? "high" : task.priority === "mid" ? "mid" : "low";
+          const priText = task.priority === "high" ? "Acil" : task.priority === "mid" ? "Orta" : "Düşük";
+          const timeStr = task.timestamp ? new Date(task.timestamp).toLocaleString("tr-TR", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" }) : "";
+
+          card.innerHTML = `
+            <div class="task-priority-bar" style="background:${priColor}"></div>
+            <div class="task-body">
+              <div class="task-text">${escHtml(task.text)}</div>
+              <div class="task-meta">
+                ${timeStr ? `<span class="task-time">${timeStr}</span>` : ""}
+                <span class="priority-tag ${priLabel}">${priText}</span>
+                ${task.status === "done" ? '<span class="priority-tag low">✓ Tamamlandı</span>' : ""}
+              </div>
+            </div>
+            <div class="task-actions">
+              <button class="action-btn ${task.status === "done" ? "btn-undone" : "btn-done"}"
+                onclick="toggleStatus('${page}','${id}','${task.status || "pending"}')">
+                ${task.status === "done" ? "Geri Al" : "Tamam"}
+              </button>
+              <button class="action-btn btn-del" onclick="deleteTask('${page}','${id}')">Sil</button>
+            </div>
+          `;
+          section.appendChild(card);
+        });
+      }
+
+      container.appendChild(section);
+    });
+
+    document.getElementById("statTotal").textContent = total;
+    document.getElementById("statPending").textContent = pending;
+    document.getElementById("statDone").textContent = done;
+    document.getElementById("statHigh").textContent = high;
+  }
+
+  function escHtml(str) {
+    const d = document.createElement("div");
+    d.textContent = str;
+    return d.innerHTML;
   }
 </script>
-
 </body>
 </html>
