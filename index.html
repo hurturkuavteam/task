@@ -1,79 +1,347 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Tüm Görevler</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Görev Panosu — HurTürk UAV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a1628;
+    --navy-card: #111d35;
+    --accent: #3b82f6;
+    --accent-light: #60a5fa;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --purple: #8b5cf6;
+    --text-main: #f0f4ff;
+    --text-muted: #8fa3c8;
+    --text-dim: #4a5a7a;
+    --border: rgba(255,255,255,0.07);
+    --border-strong: rgba(255,255,255,0.12);
+  }
+
   body {
-    font-family: Arial, sans-serif;
-    background: #fff8e1;
-    margin: 0; padding: 0;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--text-main);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
+
+  /* HEADER */
   header {
-    background: #ffb300;
-    width: 100%;
-    padding: 16px 0;
-    font-size: 24px;
-    font-weight: bold;
-    color: #3e2723;
-    text-align: center;
+    background: rgba(10,22,40,0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(10px);
   }
-  main {
-    width: 100%;
-    max-width: 700px;
-    padding: 16px 20px 40px;
-    box-sizing: border-box;
+
+  .header-left { display: flex; align-items: center; gap: 12px; }
+
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), #1d4ed8);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
   }
-  section {
-    margin-bottom: 36px;
+  .logo-icon svg { width: 16px; height: 16px; fill: white; }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
   }
-  h2 {
-    margin-bottom: 12px;
-    border-bottom: 2px solid #ffb300;
-    padding-bottom: 4px;
-    color: #5d4037;
+
+  .header-sub {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    display: none;
   }
-  .task-item {
-    background: white;
-    margin-bottom: 12px;
-    padding: 14px 16px;
+
+  @media (min-width: 500px) { .header-sub { display: block; } }
+
+  .notify-btn {
+    padding: 0.4rem 1rem;
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 8px;
+    color: var(--accent-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .notify-btn:hover { background: rgba(59,130,246,0.2); }
+
+  /* KANBAN */
+  .page-content {
+    padding: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* FILTER & SEARCH */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    display: flex; gap: 7px; flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-chip.active {
+    background: rgba(59,130,246,0.15);
+    border-color: rgba(59,130,246,0.35);
+    color: var(--accent-light);
+  }
+
+  .filter-chip.yazilim.active { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.35); color: var(--accent-light); }
+  .filter-chip.elektronik.active { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.35); color: #c4b5fd; }
+  .filter-chip.mekanik.active { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.35); color: var(--amber); }
+
+  /* COLUMNS */
+  .kanban {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+  }
+
+  @media (max-width: 900px) { .kanban { grid-template-columns: 1fr; } }
+  @media (min-width: 500px) and (max-width: 900px) { .kanban { grid-template-columns: repeat(2, 1fr); } }
+
+  .dept-col {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.1rem;
+    min-height: 300px;
+  }
+
+  .col-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .col-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .col-count {
+    background: rgba(255,255,255,0.07);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+
+  /* TASK CARD */
+  .task-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
     border-radius: 10px;
-    box-shadow: 0 3px 8px rgb(0 0 0 / 0.1);
+    padding: 0.85rem 0.95rem;
+    margin-bottom: 0.6rem;
+    cursor: default;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .task-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+
+  .task-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+  }
+
+  .task-card.done {
+    opacity: 0.5;
+  }
+
+  .task-card.done .task-text { text-decoration: line-through; }
+
+  .task-text {
+    font-size: 0.88rem;
+    color: var(--text-main);
+    line-height: 1.55;
     word-break: break-word;
-    font-size: 16px;
+    padding-left: 8px;
   }
-  @media (max-width: 480px) {
-    main {
-      padding: 12px 16px 32px;
-    }
-    h2 {
-      font-size: 20px;
-    }
+
+  .task-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding-left: 8px;
   }
+
+  .task-time {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .priority-pill {
+    font-size: 0.67rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .priority-pill.low { background: rgba(16,185,129,0.12); color: var(--green); }
+  .priority-pill.mid { background: rgba(245,158,11,0.12); color: var(--amber); }
+  .priority-pill.high { background: rgba(239,68,68,0.12); color: var(--red); }
+  .priority-pill.done-pill { background: rgba(16,185,129,0.1); color: var(--green); }
+
+  .empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+
+  .empty-state .icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+
+  /* PROGRESS */
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 3px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s;
+  }
+
+  /* NOTIFICATION BANNER */
+  .notify-banner {
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 10px;
+    padding: 0.85rem 1.2rem;
+    margin-bottom: 1.5rem;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: #6ee7b7;
+  }
+
+  .notify-banner.show { display: flex; }
 </style>
 </head>
 <body>
 
-<header>Tüm Görevler</header>
-<main>
-  <section id="yazilim-section">
-    <h2>Yazılım Görevleri</h2>
-    <div id="tasks-yazilim"></div>
-  </section>
-  <section id="elektronik-section">
-    <h2>Elektronik Görevleri</h2>
-    <div id="tasks-elektronik"></div>
-  </section>
-  <section id="mekanik-section">
-    <h2>Mekanik Görevleri</h2>
-    <div id="tasks-mekanik"></div>
-  </section>
-</main>
+<header>
+  <div class="header-left">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="logo-text">HURTURK UAV</span>
+    <span class="header-sub">Görev Panosu</span>
+  </div>
+  <div>
+    <button class="notify-btn" id="subscribeBtn" onclick="subscribeToNotifications()">
+      🔔 Bildirimlere Abone Ol
+    </button>
+  </div>
+</header>
+
+<div class="page-content">
+  <div class="notify-banner" id="notifyBanner">
+    ✓ Bildirimler aktif! Yeni görevler eklendiğinde haberdar olacaksınız.
+  </div>
+
+  <div class="toolbar">
+    <div class="filter-group" id="filterGroup">
+      <button class="filter-chip active" data-filter="all" onclick="applyFilter(this)">Tümü</button>
+      <button class="filter-chip yazilim" data-filter="yazilim" onclick="applyFilter(this)">Yazılım</button>
+      <button class="filter-chip elektronik" data-filter="elektronik" onclick="applyFilter(this)">Elektronik</button>
+      <button class="filter-chip mekanik" data-filter="mekanik" onclick="applyFilter(this)">Mekanik</button>
+      <button class="filter-chip" data-filter="high" onclick="applyFilter(this)">🔴 Acil</button>
+    </div>
+  </div>
+
+  <div class="kanban" id="kanban"></div>
+</div>
+
+<!-- Firebase Messaging SW -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('firebase-messaging-sw.js')
+      .catch(e => console.log('SW kayıt hatası:', e));
+  }
+
+  window.subscribeToNotifications = async () => {
+    if (!('Notification' in window)) {
+      alert('Bu tarayıcı bildirimleri desteklemiyor.'); return;
+    }
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      document.getElementById("notifyBanner").classList.add("show");
+      document.getElementById("subscribeBtn").textContent = "✓ Abone Olundu";
+      document.getElementById("subscribeBtn").style.color = "var(--green)";
+      // FCM token kaydetmek için Cloud Function entegrasyonu gerekir
+      // Token: await getToken(messaging, { vapidKey: 'YOUR_VAPID_KEY' })
+    } else {
+      alert('Bildirim izni reddedildi.');
+    }
+  };
+</script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
@@ -86,35 +354,121 @@
     storageBucket: "hurturk-bfdbe.firebasestorage.app",
     messagingSenderId: "215240314397",
     appId: "1:215240314397:web:22724b96074018ef7940f4",
-    measurementId: "G-9JJVX261W6"
+    databaseURL: "https://hurturk-bfdbe-default-rtdb.firebaseio.com"
+  };
+
+  const DEPTS = {
+    yazilim:  { label: "Yazılım",    color: "#3b82f6" },
+    elektronik:{ label: "Elektronik", color: "#8b5cf6" },
+    mekanik:  { label: "Mekanik",    color: "#f59e0b" }
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  function loadTasks(page) {
-    const container = document.getElementById("tasks-" + page);
-    const tasksRef = ref(db, 'tasks/' + page);
-    onValue(tasksRef, snapshot => {
-      container.innerHTML = "";
-      if (!snapshot.exists()) {
-        container.innerHTML = "<p>Görev bulunamadı.</p>";
-        return;
+  let cache = {};
+  let currentFilter = "all";
+
+  Object.keys(DEPTS).forEach(page => {
+    onValue(ref(db, "tasks/" + page), snap => {
+      cache[page] = snap.val();
+      render();
+    });
+  });
+
+  window.applyFilter = (btn) => {
+    document.querySelectorAll(".filter-chip").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;
+    render();
+  };
+
+  function render() {
+    const kanban = document.getElementById("kanban");
+    kanban.innerHTML = "";
+
+    const deptKeys = currentFilter !== "all" && DEPTS[currentFilter]
+      ? [currentFilter]
+      : Object.keys(DEPTS);
+
+    deptKeys.forEach(page => {
+      const info = DEPTS[page];
+      const tasks = cache[page];
+
+      let entries = tasks ? Object.entries(tasks) : [];
+
+      if (currentFilter === "high") {
+        entries = entries.filter(([,t]) => t.priority === "high");
       }
-      snapshot.forEach(childSnapshot => {
-        const task = childSnapshot.val();
-        const div = document.createElement("div");
-        div.classList.add("task-item");
-        div.textContent = task.text;
-        container.appendChild(div);
+
+      // Sort: pending + high first
+      entries.sort((a, b) => {
+        if (a[1].status === "done" && b[1].status !== "done") return 1;
+        if (a[1].status !== "done" && b[1].status === "done") return -1;
+        const pri = { high: 0, mid: 1, low: 2 };
+        return (pri[a[1].priority] ?? 1) - (pri[b[1].priority] ?? 1);
       });
+
+      const doneCount = entries.filter(([,t]) => t.status === "done").length;
+      const pct = entries.length ? Math.round((doneCount / entries.length) * 100) : 0;
+
+      const col = document.createElement("div");
+      col.className = "dept-col";
+
+      col.innerHTML = `
+        <div class="col-header">
+          <div class="col-title">
+            <span class="col-dot" style="background:${info.color}"></span>
+            ${info.label.toUpperCase()}
+          </div>
+          <span class="col-count">${entries.length}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${pct}%; background:${info.color};"></div>
+        </div>
+        <div style="text-align:right; font-size:0.7rem; color:var(--text-dim); margin: 4px 0 12px;">
+          ${pct}% tamamlandı
+        </div>
+        <div id="col-tasks-${page}"></div>
+      `;
+
+      kanban.appendChild(col);
+      const taskArea = col.querySelector(`#col-tasks-${page}`);
+
+      if (entries.length === 0) {
+        taskArea.innerHTML = `<div class="empty-state"><span class="icon">✓</span>Görev yok.</div>`;
+      } else {
+        entries.forEach(([id, task]) => {
+          const card = document.createElement("div");
+          card.className = "task-card" + (task.status === "done" ? " done" : "");
+          card.style.setProperty("--dept-color", info.color);
+
+          const priLabel = task.priority === "high" ? "high" : task.priority === "mid" ? "mid" : "low";
+          const priText = task.priority === "high" ? "Acil" : task.priority === "mid" ? "Orta" : "Düşük";
+          const timeStr = task.timestamp ? new Date(task.timestamp).toLocaleString("tr-TR", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" }) : "";
+
+          card.innerHTML = `
+            <div class="task-text">${escHtml(task.text)}</div>
+            <div class="task-footer">
+              <span class="task-time">${timeStr}</span>
+              <span class="priority-pill ${task.status === "done" ? "done-pill" : priLabel}">
+                ${task.status === "done" ? "✓ Tamam" : priText}
+              </span>
+            </div>
+          `;
+          card.querySelector(".task-text").style.borderLeft = `3px solid ${task.priority === "high" ? "#ef4444" : task.priority === "mid" ? "#f59e0b" : info.color}`;
+
+          taskArea.appendChild(card);
+        });
+      }
     });
   }
 
-  loadTasks("yazilim");
-  loadTasks("elektronik");
-  loadTasks("mekanik");
+  function escHtml(str) {
+    const d = document.createElement("div");
+    d.textContent = str;
+    return d.innerHTML;
+  }
 </script>
-
 </body>
 </html>
