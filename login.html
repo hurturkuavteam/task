@@ -1,114 +1,286 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Yönetici Girişi</title>
-  <style>
-    body {
-      background-color: #f0f4f8;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .login-container {
-      background: white;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 360px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      color: #003366;
-    }
-    input {
-      width: 100%;
-      padding: 0.8rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-    button {
-      width: 100%;
-      padding: 0.8rem;
-      background-color: #004080;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #002a5e;
-    }
-    .error {
-      color: red;
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 0.95rem;
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>HurTürk UAV — Giriş</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #0f2044;
+    --accent: #3b82f6;
+    --accent-light: #60a5fa;
+    --danger: #ef4444;
+    --text-main: #f0f4ff;
+    --text-muted: #8fa3c8;
+    --border: rgba(255,255,255,0.08);
+    --glass: rgba(255,255,255,0.04);
+    --glass-hover: rgba(255,255,255,0.07);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .bg-glow {
+    position: fixed;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .card {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 400px;
+    margin: 1rem;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    backdrop-filter: blur(20px);
+  }
+
+  .logo-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 0.5rem;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), #1d4ed8);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .logo-icon svg { width: 18px; height: 18px; fill: white; }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    letter-spacing: 0.05em;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin-bottom: 2rem;
+  }
+
+  .field {
+    margin-bottom: 1rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, background 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input::placeholder { color: var(--text-muted); }
+  input:focus {
+    border-color: var(--accent);
+    background: rgba(59,130,246,0.07);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 0.85rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+
+  .btn:hover { background: #2563eb; }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .error-msg {
+    margin-top: 1rem;
+    padding: 0.7rem 1rem;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    display: none;
+  }
+
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 1.5rem 0;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1;
+    height: 1px; background: var(--border);
+  }
+  .divider span { color: var(--text-muted); font-size: 0.8rem; }
+
+  .user-link {
+    display: block; text-align: center;
+    color: var(--accent-light);
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .user-link:hover { color: white; }
+</style>
 </head>
 <body>
-  <div class="login-container">
-    <h2>Admin Girişi</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Şifre">
-    <button onclick="login()">Giriş Yap</button>
-    <div class="error" id="errorMsg"></div>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="card">
+  <div class="logo-row">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="logo-text">HURTURK UAV</span>
   </div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+  <h1>Yönetici Girişi</h1>
+  <p class="subtitle">Görev yönetim sistemine erişmek için giriş yapın</p>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDG_137yYpS1J4AWSTly6tWjYSP1LZf1OE",
-      authDomain: "hurturk-bfdbe.firebaseapp.com",
-      projectId: "hurturk-bfdbe",
-      storageBucket: "hurturk-bfdbe.appspot.com",
-      messagingSenderId: "215240314397",
-      appId: "1:215240314397:web:22724b96074018ef7940f4"
-    };
+  <div class="field">
+    <label>E-posta</label>
+    <input type="email" id="email" placeholder="admin@hurturk.com" autocomplete="email"/>
+  </div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  <div class="field">
+    <label>Şifre</label>
+    <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+  </div>
 
-    // Çoklu admin UID listesi
-    const ADMIN_UIDS = [
-    "Q8Rg0Jc2yfdkWHdmUD8C7Dqlqd32", // Buraya admin UID'lerini yaz
-    "X1ChBQEZyMNejGnDwaGLFLbIn4Q2",
-    "kbAlISUr9QdlebZAUhvYrvm4N662",
-    "yEoZDk8ezpcasM8Z9i53HBD0xSJ2"
-    ];
+  <button class="btn" id="loginBtn" onclick="login()">Giriş Yap</button>
 
-    window.login = () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const errorMsg = document.getElementById("errorMsg");
+  <div class="error-msg" id="errorMsg"></div>
 
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          if (ADMIN_UIDS.includes(user.uid)) {
-            window.location.href = "admin.html";
-          } else {
-            errorMsg.textContent = "Bu kullanıcıya admin yetkisi verilmemiş.";
-          }
-        })
-        .catch((error) => {
-          errorMsg.textContent = "Giriş başarısız";
-        });
-    };
-  </script>
+  <div class="divider"><span>veya</span></div>
+  <a href="index.html" class="user-link">Görev listesini görüntüle →</a>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyD53ERkLf2LZKG8AdaVXUYFZpPPzrUbfUk",
+  authDomain: "task-55fe4.firebaseapp.com",
+  databaseURL: "https://task-55fe4-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "task-55fe4",
+  storageBucket: "task-55fe4.firebasestorage.app",
+  messagingSenderId: "493726498040",
+  appId: "1:493726498040:web:ae55dfcf7f39458be24f0d",
+  measurementId: "G-CXHL45NGYP"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  window.login = async () => {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const errorMsg = document.getElementById("errorMsg");
+    const btn = document.getElementById("loginBtn");
+
+    if (!email || !password) {
+      errorMsg.textContent = "Lütfen tüm alanları doldurun.";
+      errorMsg.style.display = "block";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Giriş yapılıyor...";
+    errorMsg.style.display = "none";
+
+    try {
+      const uc = await signInWithEmailAndPassword(auth, email, password);
+      // Yöntem B: admin kontrolü Realtime Database'den
+      const adminSnap = await get(ref(db, "admins/" + uc.user.uid));
+      if (adminSnap.exists() && adminSnap.val() === true) {
+        window.location.href = "admin.html";
+      } else {
+        errorMsg.textContent = "Bu hesaba admin yetkisi tanımlanmamış.";
+        errorMsg.style.display = "block";
+        btn.disabled = false;
+        btn.textContent = "Giriş Yap";
+      }
+    } catch (e) {
+      errorMsg.textContent = e.code === "auth/invalid-credential"
+        ? "E-posta veya şifre hatalı."
+        : "Giriş başarısız.";
+      errorMsg.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Giriş Yap";
+    }
+  };
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Enter") window.login();
+  });
+</script>
 </body>
 </html>
