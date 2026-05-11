@@ -1,55 +1,199 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mekanik Görevleri</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mekanik Görevleri — HurTürk UAV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a1628;
+    --navy-card: #111d35;
+    --accent: #3b82f6;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --text-main: #f0f4ff;
+    --text-muted: #8fa3c8;
+    --text-dim: #4a5a7a;
+    --border: rgba(255,255,255,0.07);
+    --border-strong: rgba(255,255,255,0.12);
+    --dept-color: #f59e0b;
+  }
+
   body {
-    font-family: Arial, sans-serif;
-    background: #e8f5e9;
-    margin: 0; padding: 0;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--text-main);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
+
   header {
-    background: #388e3c;
-    width: 100%;
-    padding: 16px 0;
-    font-size: 22px;
-    font-weight: bold;
-    color: white;
-    text-align: center;
+    background: rgba(10,22,40,0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(10px);
   }
+
+  .header-left { display: flex; align-items: center; gap: 12px; }
+
+  .dept-badge {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .dept-dot-lg {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--dept-color);
+    box-shadow: 0 0 8px var(--dept-color);
+  }
+
+  .back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.83rem;
+    display: flex; align-items: center; gap: 5px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--text-main); }
+
+  /* PROGRESS */
+  .progress-section {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 16px;
+  }
+
+  .progress-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--dept-color);
+    border-radius: 6px;
+    transition: width 0.5s;
+  }
+
+  .progress-label { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+  .progress-pct { font-size: 0.8rem; color: var(--text-main); font-weight: 500; white-space: nowrap; min-width: 36px; }
+
+  /* TASKS */
   main {
-    width: 100%;
-    max-width: 600px;
-    padding: 20px;
-    box-sizing: border-box;
+    padding: 1.5rem;
+    max-width: 760px;
+    margin: 0 auto;
   }
-  .task-item {
-    background: white;
-    margin-bottom: 14px;
-    padding: 14px 18px;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgb(0 0 0 / 0.12);
-    font-size: 16px;
+
+  .task-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 0.65rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+
+  .task-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+  .task-card.done { opacity: 0.5; }
+  .task-card.done .task-text { text-decoration: line-through; }
+
+  .task-status-icon {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .done .task-status-icon {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+
+  .task-body { flex: 1; }
+
+  .task-text {
+    font-size: 0.9rem;
+    line-height: 1.55;
     word-break: break-word;
+    color: var(--text-main);
   }
-  @media (max-width: 480px) {
-    main {
-      padding: 16px 14px;
-    }
+
+  .task-meta {
+    display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap;
+  }
+
+  .task-time { font-size: 0.7rem; color: var(--text-dim); }
+
+  .priority-pill {
+    font-size: 0.67rem; font-weight: 600;
+    padding: 2px 7px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .p-low { background: rgba(59,130,246,0.12); color: var(--accent); }
+  .p-mid { background: rgba(245,158,11,0.12); color: var(--amber); }
+  .p-high { background: rgba(239,68,68,0.12); color: var(--red); }
+  .p-done { background: rgba(16,185,129,0.12); color: var(--green); }
+
+  .empty-state {
+    text-align: center; padding: 4rem 1rem;
+    color: var(--text-dim);
+  }
+  .empty-state .big { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 1.2rem 0 0.6rem;
   }
 </style>
 </head>
 <body>
 
-<header>Mekanik Görevleri</header>
-<main id="tasks-container">
-  <!-- Görevler buraya gelecek -->
+<header>
+  <div class="header-left">
+    <div class="dept-badge">
+      <span class="dept-dot-lg"></span>
+      MEKANİK
+    </div>
+  </div>
+  <a href="index.html" class="back-link">← Panoya Dön</a>
+</header>
+
+<div class="progress-section">
+  <span class="progress-label">Tamamlanma</span>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <span class="progress-pct" id="progressPct">0%</span>
+</div>
+
+<main id="container">
+  <div class="empty-state"><div class="big">⏳</div>Yükleniyor...</div>
 </main>
 
 <script type="module">
@@ -63,35 +207,77 @@
     storageBucket: "hurturk-bfdbe.firebasestorage.app",
     messagingSenderId: "215240314397",
     appId: "1:215240314397:web:22724b96074018ef7940f4",
-    measurementId: "G-9JJVX261W6"
+    databaseURL: "https://hurturk-bfdbe-default-rtdb.firebaseio.com"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
+  const PAGE = "mekanik";
 
-  const pageName = "mekanik"; // Değiştir: page2, page3
+  onValue(ref(db, "tasks/" + PAGE), snap => {
+    const container = document.getElementById("container");
+    const tasks = snap.val();
 
-  function loadTasks() {
-    const container = document.getElementById("tasks-container");
-    const tasksRef = ref(db, 'tasks/' + pageName);
-    onValue(tasksRef, snapshot => {
-      container.innerHTML = "";
-      if (!snapshot.exists()) {
-        container.innerHTML = "<p>Görev bulunamadı.</p>";
-        return;
-      }
-      snapshot.forEach(childSnapshot => {
-        const task = childSnapshot.val();
-        const div = document.createElement("div");
-        div.classList.add("task-item");
-        div.textContent = task.text;
-        container.appendChild(div);
-      });
+    if (!tasks) {
+      container.innerHTML = `<div class="empty-state"><div class="big">✓</div>Henüz görev eklenmemiş.</div>`;
+      document.getElementById("progressFill").style.width = "0%";
+      document.getElementById("progressPct").textContent = "0%";
+      return;
+    }
+
+    const entries = Object.entries(tasks).sort((a, b) => {
+      if (a[1].status === "done" && b[1].status !== "done") return 1;
+      if (a[1].status !== "done" && b[1].status === "done") return -1;
+      const pri = { high: 0, mid: 1, low: 2 };
+      return (pri[a[1].priority] ?? 1) - (pri[b[1].priority] ?? 1);
     });
+
+    const doneCount = entries.filter(([,t]) => t.status === "done").length;
+    const pct = Math.round((doneCount / entries.length) * 100);
+    document.getElementById("progressFill").style.width = pct + "%";
+    document.getElementById("progressPct").textContent = pct + "%";
+
+    const pending = entries.filter(([,t]) => t.status !== "done");
+    const done = entries.filter(([,t]) => t.status === "done");
+
+    container.innerHTML = "";
+
+    if (pending.length) {
+      container.innerHTML += `<div class="section-label">Bekleyen Görevler</div>`;
+      pending.forEach(([, task]) => container.appendChild(makeCard(task, false)));
+    }
+
+    if (done.length) {
+      container.innerHTML += `<div class="section-label">Tamamlananlar</div>`;
+      done.forEach(([, task]) => container.appendChild(makeCard(task, true)));
+    }
+  });
+
+  function makeCard(task, isDone) {
+    const div = document.createElement("div");
+    div.className = "task-card" + (isDone ? " done" : "");
+    const priClass = isDone ? "p-done" : (task.priority === "high" ? "p-high" : task.priority === "mid" ? "p-mid" : "p-low");
+    const priText = isDone ? "✓ Tamam" : (task.priority === "high" ? "Acil" : task.priority === "mid" ? "Orta" : "Düşük");
+    const timeStr = task.timestamp ? new Date(task.timestamp).toLocaleString("tr-TR", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" }) : "";
+
+    div.innerHTML = `
+      <div class="task-status-icon">${isDone ? "✓" : ""}</div>
+      <div class="task-body">
+        <div class="task-text">${escHtml(task.text)}</div>
+        <div class="task-meta">
+          ${timeStr ? `<span class="task-time">${timeStr}</span>` : ""}
+          <span class="priority-pill ${priClass}">${priText}</span>
+        </div>
+      </div>
+    `;
+    return div;
   }
 
-  loadTasks();
+  function escHtml(str) {
+    const d = document.createElement("div");
+    d.textContent = str;
+    return d.innerHTML;
+  }
 </script>
-
 </body>
 </html>
